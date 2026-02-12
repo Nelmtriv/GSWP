@@ -34,11 +34,31 @@ $conn = $con->getConexao();
 
 $editarProduto = null;
 
+try{
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
 
     $acao = $_POST['acao'];
 
     if ($acao === 'cadastrar') {
+
+        $nome = $_POST['nome'];
+        $unidade = $_POST['unidadeMedida'];
+        $quantidade = $_POST['quantidade'];
+        $preco = $_POST['precoUnitario'];
+        $dataValidade = $_POST['dataValidade'];
+
+        if(empty($nome) || empty($unidade) || empty($quantidade) || empty($preco)){
+            throw new Exception("Preencha todos os campos");
+        }
+
+        if($quantidade < 0){
+            throw new Exception("Quantidade inválida");
+        }
+
+        if($preco <= 0){
+            throw new Exception("Preço inválido");
+        }
 
         $stmt = mysqli_prepare(
             $conn,
@@ -49,15 +69,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
         mysqli_stmt_bind_param(
             $stmt,
             "ssdds",
-            $_POST['nome'],
-            $_POST['unidadeMedida'],
-            $_POST['quantidade'],
-            $_POST['precoUnitario'],
-            $_POST['dataValidade']
+            $nome,
+            $unidade,
+            $quantidade,
+            $preco,
+            $dataValidade
         );
 
-        mysqli_stmt_execute($stmt);
+        if(!mysqli_stmt_execute($stmt)){
+            throw new Exception("Erro ao cadastrar produto");
+        }
+
         mysqli_stmt_close($stmt);
+
+        header("Location: ProdutoController.php?ok=1");
+        exit;
     }
 
     if ($acao === 'editar') {
@@ -89,6 +115,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
 
     if ($acao === 'atualizar') {
 
+        $codigo = $_POST['codigo'];
+        $nome = $_POST['nome'];
+        $unidade = $_POST['unidadeMedida'];
+        $quantidade = $_POST['quantidade'];
+        $preco = $_POST['precoUnitario'];
+        $dataValidade = $_POST['dataValidade'];
+
+        if(empty($nome) || empty($unidade)){
+            throw new Exception("Preencha todos os campos");
+        }
+
+        if($preco <= 0){
+            throw new Exception("Preço inválido");
+        }
+
         $stmt = mysqli_prepare(
             $conn,
             "UPDATE Produtos
@@ -99,16 +140,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
         mysqli_stmt_bind_param(
             $stmt,
             "ssddsi",
-            $_POST['nome'],
-            $_POST['unidadeMedida'],
-            $_POST['quantidade'],
-            $_POST['precoUnitario'],
-            $_POST['dataValidade'],
-            $_POST['codigo']
+            $nome,
+            $unidade,
+            $quantidade,
+            $preco,
+            $dataValidade,
+            $codigo
         );
 
-        mysqli_stmt_execute($stmt);
+        if(!mysqli_stmt_execute($stmt)){
+            throw new Exception("Erro ao atualizar");
+        }
+
         mysqli_stmt_close($stmt);
+
+        header("Location: ProdutoController.php?ok=2");
+        exit;
     }
 
     if ($acao === 'remover') {
@@ -119,9 +166,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
         );
 
         mysqli_stmt_bind_param($stmt, "i", $_POST['codigo']);
-        mysqli_stmt_execute($stmt);
+
+        if(!mysqli_stmt_execute($stmt)){
+            throw new Exception("Erro ao remover");
+        }
+
         mysqli_stmt_close($stmt);
+
+        header("Location: ProdutoController.php?ok=3");
+        exit;
     }
+}
+
+}catch(Exception $e){
+    header("Location: ProdutoController.php?erro=".$e->getMessage());
+    exit;
 }
 
 mysqli_close($conn);
