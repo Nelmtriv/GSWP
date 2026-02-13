@@ -1,17 +1,26 @@
 <?php
+session_start();
+
+if (!isset($_SESSION["usuario"])) {
+    header("Location: ../auth/login.php");
+    exit;
+}
+?>
+
+<?php
 $produtos = $produtos ?? [];
 $editarProduto = $editarProduto ?? null;
 ?>
-<?php if(isset($_GET['erro'])): ?>
-<div class="erro">
-<?= $_GET['erro'] ?>
-</div>
+<?php if (isset($_GET['erro'])): ?>
+    <div class="erro">
+        <?= $_GET['erro'] ?>
+    </div>
 <?php endif; ?>
 
-<?php if(isset($_GET['ok'])): ?>
-<div class="ok">
-Operação realizada com sucesso
-</div>
+<?php if (isset($_GET['ok'])): ?>
+    <div class="ok">
+        Operação realizada com sucesso
+    </div>
 <?php endif; ?>
 
 <!DOCTYPE html>
@@ -30,49 +39,71 @@ Operação realizada com sucesso
 
     <div class="container">
 
-        <div class="top">
-            <h1>Sistema de Produtos</h1>
-            <a href="../controller/VendedorController.php" class="btn-nav">
-                <i class="fa-solid fa-box"></i>Vendedores</a>
+        <div class="top-bar">
+            <div class="top-left">
+                <h1>Sistema de Produtos</h1>
+                <span class="user">👤 <?= $_SESSION["usuario"] ?></span>
+            </div>
+
+            <div class="top-right">
+                <a href="/GSWP/controller/VendedorController.php" class="btn-nav">
+                    <i class="fa-solid fa-box"></i> Vendedor
+                </a>
+
+                <a href="/GSWP/controller/logout.php" class="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </div>
         </div>
 
         <div class="form-box">
             <form method="post" action="../controller/ProdutoController.php">
-                <div class="form-row">
-                    <input type="hidden" name="codigo"
-                        value="<?= $editarProduto ? $editarProduto->getCodigo() : '' ?>">
-
-                    <input type="text" name="nome"
-                        placeholder="Nome do Produto"
-                        value="<?= $editarProduto ? $editarProduto->getNome() : '' ?>"
-                        required>
-
-                    <input type="text" name="unidadeMedida"
-                        placeholder="Unidade de Medida"
-                        value="<?= $editarProduto ? $editarProduto->getUnidadeMedida() : '' ?>"
-                        required>
-
-                    <input type="number" step="0.01" name="quantidade"
-                        placeholder="Quantidade"
-                        value="<?= $editarProduto ? $editarProduto->getQuantidade() : '' ?>"
-                        required>
-                </div>
+                <?php if ($editarProduto): ?>
+                    <input type="hidden" name="codigo" value="<?= $editarProduto->getCodigo() ?>">
+                <?php endif; ?>
 
                 <div class="form-row">
-                    <input type="number" step="0.01" name="precoUnitario"
-                        placeholder="Preço Unitário"
-                        value="<?= $editarProduto ? $editarProduto->getPrecoUnitario() : '' ?>"
-                        required>
+                    <input type="text" name="nome" placeholder="Nome"
+                        value="<?= $editarProduto ? $editarProduto->getNome() : '' ?>" required>
 
-                    <input type="date" name="dataValidade"
-                        value="<?= $editarProduto ? $editarProduto->getDataValidade() : '' ?>"
-                        required>
+                    <select name="unidadeMedida" required>
+                        <option value="">Unidade</option>
+
+                        <option value="kg"
+                            <?= ($editarProduto && $editarProduto->getUnidadeMedida() == "kg") ? 'selected' : '' ?>>
+                            kg</option>
+
+                        <option value="g"
+                            <?= ($editarProduto && $editarProduto->getUnidadeMedida() == "g") ? 'selected' : '' ?>>
+                            g</option>
+
+                        <option value="l"
+                            <?= ($editarProduto && $editarProduto->getUnidadeMedida() == "l") ? 'selected' : '' ?>>
+                            l</option>
+
+                        <option value="ml"
+                            <?= ($editarProduto && $editarProduto->getUnidadeMedida() == "ml") ? 'selected' : '' ?>>
+                            ml</option>
+                    </select>
+
+                    <input type="number" name="quantidade" placeholder="Quantidade"
+                        value="<?= $editarProduto ? $editarProduto->getQuantidade() : '' ?>" required>
+
+                    <input type="number" step="0.01" name="precoUnitario" placeholder="Preço Unitário"
+                        value="<?= $editarProduto ? $editarProduto->getPrecoUnitario() : '' ?>" required>
+
+                    <input type="date" name="dataValidade" placeholder="Data de validade"
+                        value="<?= $editarProduto ? $editarProduto->getDataValidade() : '' ?>">
+
                 </div>
 
                 <div class="form-actions">
                     <?php if ($editarProduto): ?>
-                        <a href="../controller/ProdutoController.php" class="btn-cancel">Cancelar</a>
+                        <a href="../controller/ProdutoController.php" class="btn-cancel">
+                            Cancelar
+                        </a>
                     <?php endif; ?>
+
 
                     <button type="submit" name="acao"
                         value="<?= $editarProduto ? 'atualizar' : 'cadastrar' ?>">
@@ -107,11 +138,12 @@ Operação realizada com sucesso
                             <td class="ops">
                                 <form method="post" action="../controller/ProdutoController.php">
                                     <input type="hidden" name="codigo" value="<?= $p->getCodigo() ?>">
-                                    <button class="btn-edit">
+                                    <button name="acao" value="editar" class="btn-edit">
                                         <i class="fa-solid fa-pen"></i>
                                     </button>
 
-                                    <button class="btn-remove">
+                                    <button name="acao" value="remover" class="btn-remove">
+
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>

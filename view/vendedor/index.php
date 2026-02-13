@@ -1,4 +1,12 @@
 <?php
+if (!isset($_SESSION["usuario"])) {
+    header("Location: /GSWP/controller/AuthController.php");
+
+    exit;
+}
+?>
+
+<?php
 $vendedores = $vendedores ?? [];
 $editarVendedor = $editarVendedor ?? null;
 ?>
@@ -25,12 +33,21 @@ $editarVendedor = $editarVendedor ?? null;
 
     <div class="container">
 
-        <div class="top">
-            <h1>Sistema de Vendedores</h1>
-            <a href="../controller/ProdutoController.php" class="btn-nav">
-                <i class="fa-solid fa-box"></i> Produtos
-            </a>
+        <div class="top-bar">
+            <div class="top-left">
+                <h1>Sistema de Vendedores</h1>
+                <span class="user">👤 <?= $_SESSION["usuario"] ?></span>
+            </div>
 
+            <div class="top-right">
+                <a href="/GSWP/controller/ProdutoController.php" class="btn-nav">
+                    <i class="fa-solid fa-box"></i> Produtos
+                </a>
+
+                <a href="/GSWP/controller/logout.php" class="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </div>
         </div>
 
         <div class="form-box">
@@ -55,27 +72,49 @@ $editarVendedor = $editarVendedor ?? null;
                 <div class="form-row">
                     <select name="genero" required>
                         <option value="">Género</option>
-                        <option value="Masculino">Masculino</option>
-                        <option value="Feminino">Feminino</option>
+
+                        <option value="Masculino"
+                            <?= ($editarVendedor && $editarVendedor->getGenero() == "Masculino") ? 'selected' : '' ?>>
+                            Masculino</option>
+
+                        <option value="Feminino"
+                            <?= ($editarVendedor && $editarVendedor->getGenero() == "Feminino") ? 'selected' : '' ?>>
+                            Feminino</option>
                     </select>
+
 
                     <select name="estadoCivil" required>
                         <option value="">Estado civil</option>
-                        <option value="Solteiro">Solteiro(a)</option>
-                        <option value="Casado">Casado(a)</option>
-                        <option value="Divorciado">Divorciado(a)</option>
-                        <option value="Viuvo">Viuvo(a)</option>
+
+                        <option value="Solteiro"
+                            <?= ($editarVendedor && $editarVendedor->getEstadoCivil() == "Solteiro") ? 'selected' : '' ?>>
+                            Solteiro(a)</option>
+
+                        <option value="Casado"
+                            <?= ($editarVendedor && $editarVendedor->getEstadoCivil() == "Casado") ? 'selected' : '' ?>>
+                            Casado(a)</option>
+
+                        <option value="Divorciado"
+                            <?= ($editarVendedor && $editarVendedor->getEstadoCivil() == "Divorciado") ? 'selected' : '' ?>>
+                            Divorciado(a)</option>
+
+                        <option value="Viuvo"
+                            <?= ($editarVendedor && $editarVendedor->getEstadoCivil() == "Viuvo") ? 'selected' : '' ?>>
+                            Viuvo(a)</option>
                     </select>
+
 
                     <select name="codigo_produto" required>
                         <option value="">Selecionar produto</option>
 
                         <?php foreach ($listaProdutos as $p): ?>
-                            <option value="<?= $p['codigo_produto'] ?>">
+                            <option value="<?= $p['codigo_produto'] ?>"
+                                <?= ($editarVendedor && $editarVendedor->getCodigoProduto() == $p['codigo_produto']) ? 'selected' : '' ?>>
                                 <?= $p['nome'] ?> (stock: <?= $p['quantidade'] ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
+
                 </div>
 
                 <div class="form-row">

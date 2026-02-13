@@ -2,6 +2,13 @@
 require_once __DIR__ . '/Conexao.php';
 require_once __DIR__ . '/../model/Vendedor.php';
 
+session_start();
+
+if (!isset($_SESSION["usuario"])) {
+    header("Location: /GSWP/controller/AuthController.php");
+    exit;
+}
+
 $conexao = new Conexao();
 $conn = $conexao->getConexao();
 
@@ -116,7 +123,8 @@ $bonus
 
             $stmt = $conn->prepare(
 "UPDATE vendedores 
-SET nome=?, contacto=?, genero=?, estadoCivil=?, codigo_produto=?, quantidade=?, diasTrabalhados=?, salarioDiario=?, bonusDiario=?
+SET nome=?, contacto=?, genero=?, estadoCivil=?, codigo_produto=?, quantidade=?, 
+diasTrabalhados=?, salarioDiario=?, bonusDiario=?
 WHERE codigo=?"
 );
 
