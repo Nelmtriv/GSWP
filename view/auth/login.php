@@ -20,7 +20,7 @@
 
         <form class="login-form" method="POST" action="/GSWP/controller/AuthController.php">
 
-            <h2>Entrar</h2>
+            <h2>Login</h2>
 
             <?php if(!empty($erro)): ?>
                 <div class="erro"><?= $erro ?></div>
