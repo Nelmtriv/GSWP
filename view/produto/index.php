@@ -153,9 +153,6 @@ $editarProduto = $editarProduto ?? null;
                 </tbody>
             </table>
         </div>
-
     </div>
-
 </body>
-
 </html>
