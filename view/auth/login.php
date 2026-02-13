@@ -17,9 +17,7 @@
     </div>
 
     <div class="login-right">
-
         <form class="login-form" method="POST" action="/GSWP/controller/AuthController.php">
-
             <h2>Login</h2>
 
             <?php if(!empty($erro)): ?>
@@ -37,11 +35,8 @@
             </div>
 
             <button class="btn-login">Entrar</button>
-
         </form>
-
     </div>
-
 </div>
 </body>
 </html>
